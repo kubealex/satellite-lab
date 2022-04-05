@@ -1,0 +1,6 @@
+.terraform*
+terraform.tfstate* 
+*.iso
+*.tar.gz
+*.log
+context/
