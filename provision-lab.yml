@@ -55,7 +55,7 @@
             os: "rhel7"
           - url: "{{ rhel8_url }}"
             os: "rhel8"
-      when: offline_token is undefined
+      when: offline_token is defined
       
 - name: This play provisions VMs for Satellite demos
   hosts: localhost
