@@ -25,7 +25,10 @@
         register: response
 
       - name: Workaround to non-working uri module on success
-        shell: 'curl -H "Authorization: Bearer {{ response.json.access_token }}" https://api.access.redhat.com/management/v1/images/{{ checksum.rhel8 }}/download'
+        shell: 'curl -H "Authorization: Bearer {{ response.json.access_token }}" https://api.access.redhat.com/management/v1/images/{{ item }}/download'
+        loop:
+          - "{{ checksum.rhel7 }}"
+          - "{{ checksum.rhel8 }}"
         register: imageurl
 
   # HANGING FOREVER
