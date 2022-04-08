@@ -76,3 +76,5 @@ It will install Satellite with:
 ## Test your configuration
 
 If the setup was good, you will be able to access your IdM server on [https://satellite.satellitedemo.labs](https://satellite.satellitedemo.labs)
+
+Now you can follow instructions in the [DEMO repository](https://github.com/Red-Hat-EMEA-Portflio-SSA/Red-Hat-Satellite-Demo)
