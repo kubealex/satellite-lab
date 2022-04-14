@@ -46,6 +46,10 @@ To download the images via the playbook, you will be prompted to enter your [Off
 
 **IMPORTANT** If you don't want to download images (it's around 20GB), just leave the variable blank.
 
+Since terraform module relies on the community.general collection you will need to install it via:
+
+    ansible-galaxy collection install community.general
+
 Once you set the *network_cidr* variable to the desired value, you can run the playbook:
 
     ansible-playbook -i inventory provision-lab.yml
@@ -56,7 +60,7 @@ It takes around 20-25 minutes to be up and running. If you experience last step 
 
 With your lab up and running, you can proceed installing Satellite using the provided **satellite-setup.yml** playbook.
 
-    ansible-playbook -i inventory setup-satellite.yml
+    ansible-playbook -i inventory satellite-setup.yml
 
 It will ask for:
 
