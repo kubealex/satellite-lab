@@ -52,7 +52,7 @@
       - name: Retrieve RHEL ISO
         get_url:
           url: "{{ item.url }}"
-          dest: "{{ playbook_dir }}/{{ item.filename }}.iso"
+          dest: "{{ playbook_dir }}/{{ item.os }}.iso"
         loop:
           - url: "{{ rhel7_url }}"
             os: "rhel7"
