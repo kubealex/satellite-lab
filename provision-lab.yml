@@ -64,8 +64,42 @@
   hosts: localhost
   vars:
     network_cidr: 192.168.211.0/24
+    packages:
+    - python3-lxml
+    - python3-netaddr
+    - python3-libvirt
+    - python3-pip
+    - libvirt-devel
+    - libvirt
+    - qemu-kvm
+    - virt-install
+    - virt-manager
   become: true
   tasks:
+    - name: Ensure required packages are in place
+      yum: 
+        name: "{{ packages }}"
+
+    - name: Ensure libvirtd is running
+      service: 
+        name: libvirtd
+        state: enabled
+
+    - name: Ensure libvirt can use root as user
+      replace:
+        path: /etc/libvirt/qemu.conf
+        regexp: "{{ item.regexp }}"
+        replace: "{{ item.line }}"
+      loop:
+        - regexp: '#user = "root"'
+          line: 'user = "root"'
+        - regexp: '#group = "root"'
+          line: 'group = "root"'
+
+    - name: Restart libvirtd service
+      service: 
+        name: libvirtd
+        state: restarted
 
     - name: Create a 1Mib file to store kickstart 
       community.general.filesize:
@@ -119,7 +153,18 @@
       copy:
         content: server=/satellitedemo.labs/{{ network_cidr | next_nth_usable(1)}}
         dest: /etc/NetworkManager/dnsmasq.d/satellitedemo.conf
-    
+
+    - name: Ensure NM dnsmasq directory exists
+      file:
+        path: /etc/NetworkManager/dnsmasq.d
+        state: directory        
+
+    - name: Configure NetworkManager for local DNS
+      blockinfile:
+        path: /etc/NetworkManager/conf.d/satellite-localdns.conf
+        block: |
+          [dns]
+
     - name: Restart NetworkManager to reload config
       service:
         name: NetworkManager
