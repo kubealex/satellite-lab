@@ -163,7 +163,8 @@
       blockinfile:
         path: /etc/NetworkManager/conf.d/satellite-localdns.conf
         block: |
-          [dns]
+          [main]
+          dns=dnsmasq
 
     - name: Restart NetworkManager to reload config
       service:
