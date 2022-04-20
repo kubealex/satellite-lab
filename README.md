@@ -46,9 +46,9 @@ To download the images via the playbook, you will be prompted to enter your [Off
 
 **IMPORTANT** If you don't want to download images (it's around 20GB), just leave the variable blank.
 
-Since terraform module relies on the community.general collection you will need to install it via:
+Since some modules rely on additional collections you will need to install them via:
 
-    ansible-galaxy collection install community.general
+    ansible-galaxy install -r requirements.yml
 
 Once you set the *network_cidr* variable to the desired value, you can run the playbook:
 
