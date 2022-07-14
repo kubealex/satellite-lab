@@ -77,7 +77,7 @@
     domain: satellite.labs
     modules:
       - module: 01_satellite_instance
-        instance: rhel8-satellite
+        instance: rhel8
         hostname: satellite   
       - module: 02_client_instance
         instance: rhel8
@@ -182,7 +182,7 @@
 
     - name: Add servers to inventory
       add_host:
-        hostname: "{{ item }}.satellitedemo.labs"
+        hostname: "{{ item }}.{{ domain }}"
         ansible_user: root
         ansible_password: redhat
         ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
@@ -190,8 +190,8 @@
           - "servers"        
       loop:
         - satellite
-        - el7-server
         - el8-server
+        - el9-server
 
     - name: Ensure to clean known_hosts
       known_hosts:
