@@ -49,5 +49,5 @@ variable os_image {
 variable kickstart_image {
   type        = string
   description = "Path for the kickstart image"
-  default     = "rhel8-satellite-oemdrv.img"
+  default     = "rhel8-oemdrv.img"
 }
