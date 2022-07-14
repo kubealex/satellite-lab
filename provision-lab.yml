@@ -77,14 +77,17 @@
     domain: satellite.labs
     modules:
       - module: 01_satellite_instance
-        instance: rhel8
-        hostname: satellite   
+        instance: rhel8-satellite
+        hostname: satellite
+        version: rhel8
       - module: 02_client_instance
         instance: rhel8
         hostname: el8-server    
+        version: rhel8
       - module: 02_client_instance
         instance: rhel9
         hostname: el9-server
+        version: rhel9
 
   become: true
   tasks:
@@ -123,7 +126,7 @@
 
     - name: Create symbolic link to RHEL image
       ansible.builtin.file:
-        src: "{{ playbook_dir }}/{{ item.instance }}.iso"
+        src: "{{ playbook_dir }}/{{ item.version }}.iso"
         dest: "{{ playbook_dir }}/terraform/modules/{{ item.module }}/{{ item.instance }}.iso"
         state: link
       loop: "{{ modules }}"
