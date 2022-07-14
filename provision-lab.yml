@@ -158,15 +158,18 @@
           network_cidr: ' ["{{ network_cidr }}"]'
         state: present
 
+    - name: Ensure required NM directories exist
+      file:
+        path: /etc/NetworkManager/{{ item }}
+        state: directory
+      loop: 
+        - dnsmasq.d
+        - conf.d      
+
     - name: Add Local resolver for the domain
       copy:
         content: server=/satellitedemo.labs/{{ network_cidr | next_nth_usable(1)}}
         dest: /etc/NetworkManager/dnsmasq.d/satellitedemo.conf
-
-    - name: Ensure NM dnsmasq directory exists
-      file:
-        path: /etc/NetworkManager/dnsmasq.d
-        state: directory        
 
     - name: Configure NetworkManager for local DNS
       blockinfile:
