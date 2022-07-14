@@ -46,7 +46,7 @@
         state: latest
 
     - name: Enable satellite module
-      ansible.builtin.command: dnf module enable satellite:el8
+      ansible.builtin.command: "dnf module enable satellite:el8"
             
     - name: Install satellite packages
       yum:
