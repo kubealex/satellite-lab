@@ -47,9 +47,6 @@
 
     - name: Enable satellite module
       ansible.builtin.command: dnf module enable satellite:el8
-      register: result
-      changed_when:
-        - '"Enabling module streams" in result.stdout'
             
     - name: Install satellite packages
       yum:
