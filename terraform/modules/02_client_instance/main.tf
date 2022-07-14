@@ -8,22 +8,8 @@ terraform {
   }
 }
 
-resource "libvirt_volume" "os_image_rhel7" {
-  name = "${var.hostname}-os_image"
-  pool = var.libvirt_pool
-  format = "qcow2"
-  size = var.disk_size*1073741824
-}
-
-resource "libvirt_volume" "kickstart_image_rhel7" {
-  name = "${var.hostname}-kickstart_rhel7"
-  pool = var.libvirt_pool
-  source = abspath("${path.module}/${var.kickstart_image_rhel7}")
-  format = "qcow2"
-}
-
 resource "libvirt_volume" "os_image_rhel8" {
-  name = "${var.hostname}-os_image_rhel8"
+  name = "${var.hostname}-os_image"
   pool = var.libvirt_pool
   format = "qcow2"
   size = var.disk_size*1073741824
@@ -33,6 +19,20 @@ resource "libvirt_volume" "kickstart_image_rhel8" {
   name = "${var.hostname}-kickstart_rhel8"
   pool = var.libvirt_pool
   source = abspath("${path.module}/${var.kickstart_image_rhel8}")
+  format = "qcow2"
+}
+
+resource "libvirt_volume" "os_image_rhel9" {
+  name = "${var.hostname}-os_image_rhel9"
+  pool = var.libvirt_pool
+  format = "qcow2"
+  size = var.disk_size*1073741824
+}
+
+resource "libvirt_volume" "kickstart_image_rhel9" {
+  name = "${var.hostname}-kickstart_rhel9"
+  pool = var.libvirt_pool
+  source = abspath("${path.module}/${var.kickstart_image_rhel9}")
   format = "qcow2"
 }
 
@@ -51,15 +51,15 @@ resource "libvirt_domain" "el7-server" {
   }
 
   disk {
-     file = abspath("${path.module}/${var.os_image_rhel7}")
+     file = abspath("${path.module}/${var.os_image_rhel8}")
   }
 
   disk {
-     volume_id = libvirt_volume.os_image_rhel7.id
+     volume_id = libvirt_volume.os_image_rhel8.id
   }
   
   disk {
-     volume_id = libvirt_volume.kickstart_image_rhel7.id
+     volume_id = libvirt_volume.kickstart_image_rhel8.id
   }
 
   network_interface {
@@ -94,15 +94,15 @@ resource "libvirt_domain" "el8-server" {
   }
 
   disk {
-     file = abspath("${path.module}/${var.os_image_rhel8}")
+     file = abspath("${path.module}/${var.os_image_rhel9}")
   }
 
   disk {
-     volume_id = libvirt_volume.os_image_rhel8.id
+     volume_id = libvirt_volume.os_image_rhel9.id
   }
   
   disk {
-     volume_id = libvirt_volume.kickstart_image_rhel8.id
+     volume_id = libvirt_volume.kickstart_image_rhel9.id
   }
 
   network_interface {

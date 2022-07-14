@@ -7,8 +7,8 @@
       private: yes      
   vars:
     checksum:
-      rhel8: 1f78e705cd1d8897a05afa060f77d81ed81ac141c2465d4763c0382aa96cadd0
-      rhel7: 19d653ce2f04f202e79773a0cbeda82070e7527557e814ebbce658773fbe8191
+      rhel9: a387f3230acf87ee38707ee90d3c88f44d7bf579e6325492f562f0f1f9449e89
+      rhel8: c324f3b07283f9393168f0a4ad2167ebbf7e4699d65c9670e0d9e58ba4e2a9a8
 
   tasks:
     - block:
@@ -27,8 +27,8 @@
       - name: Workaround to non-working uri module on success
         shell: 'curl -H "Authorization: Bearer {{ response.json.access_token }}" https://api.access.redhat.com/management/v1/images/{{ item }}/download'
         loop:
-          - "{{ checksum.rhel7 }}"
           - "{{ checksum.rhel8 }}"
+          - "{{ checksum.rhel9 }}"
         register: imageurl
 
   # HANGING FOREVER
@@ -44,20 +44,20 @@
   #      register: imageurl
       - name: Set result as facts
         ansible.builtin.set_fact:
-          rhel7_url: "{{ (imageurl.results[0].stdout | from_json).body.href }}"
-          rhel7_filename: "{{(imageurl.results[0].stdout | from_json).body.filename }}"
-          rhel8_url: "{{ (imageurl.results[1].stdout | from_json).body.href }}"
-          rhel8_filename: "{{ (imageurl.results[1].stdout | from_json).body.filename }}"
+          rhel8_url: "{{ (imageurl.results[0].stdout | from_json).body.href }}"
+          rhel8_filename: "{{(imageurl.results[0].stdout | from_json).body.filename }}"
+          rhel9_url: "{{ (imageurl.results[1].stdout | from_json).body.href }}"
+          rhel9_filename: "{{ (imageurl.results[1].stdout | from_json).body.filename }}"
 
       - name: Retrieve RHEL ISO
         get_url:
           url: "{{ item.url }}"
           dest: "{{ playbook_dir }}/{{ item.os }}.iso"
         loop:
-          - url: "{{ rhel7_url }}"
-            os: "rhel7"
           - url: "{{ rhel8_url }}"
             os: "rhel8"
+          - url: "{{ rhel9_url }}"
+            os: "rhel9"
       when: offline_token is defined
       
 - name: This play provisions VMs for Satellite demos
@@ -74,6 +74,18 @@
     - qemu-kvm
     - virt-install
     - virt-manager
+    domain: satellite.labs
+    modules:
+      - module: 01_satellite_instance
+        instance: rhel8-satellite
+        hostname: satellite   
+      - module: 02_client_instance
+        instance: rhel8
+        hostname: el8-server    
+      - module: 02_client_instance
+        instance: rhel9
+        hostname: el9-server
+
   become: true
   tasks:
     - name: Ensure required packages are in place
@@ -100,47 +112,43 @@
       service: 
         name: libvirtd
         state: restarted
-
-    - name: Create a 1Mib file to store kickstart 
-      community.general.filesize:
-        path: "{{ playbook_dir }}/terraform/modules/{{ item.module }}/{{ item.kickstart }}-oemdrv.img"
-        size: 1MiB
-      loop:
-        - module: 01_satellite_instance
-          kickstart: rhel7-satellite
-        - module: 02_client_instance
-          kickstart: rhel7
-        - module: 02_client_instance
-          kickstart: rhel8
+   
+    - name: Create required folders
+      ansible.builtin.file:
+        state: directory
+        path: "{{ playbook_dir }}/terraform/kickstart/{{ item.instance }}"
+        recurse: true
+      loop: "{{ modules }}"
 
     - name: Create symbolic link to RHEL image
-      file:
-        src: "{{ playbook_dir }}/{{ item.os }}.iso"
-        dest: "{{ playbook_dir }}/terraform/modules/{{ item.module }}/{{ item.os }}.iso"
+      ansible.builtin.file:
+        src: "{{ playbook_dir }}/{{ item.instance }}.iso"
+        dest: "{{ playbook_dir }}/terraform/modules/{{ item.module }}/{{ item.instance }}.iso"
         state: link
-      loop:
-        - module: 01_satellite_instance
-          os: rhel7
-        - module: 02_client_instance
-          os: rhel7          
-        - module: 02_client_instance
-          os: rhel8
-
+      loop: "{{ modules }}"
+          
+    - name: Create a 1Mib file to store kickstart 
+      community.general.filesize:
+        path: "{{ playbook_dir }}/terraform/modules/{{ item.module }}/{{ item.instance }}-oemdrv.img"
+        size: 1MiB
+      loop: "{{ modules }}"
+                         
+    - name: Generate kickstart from template
+      ansible.builtin.template:
+        src: ks.cfg.j2
+        dest: "{{ playbook_dir }}/terraform/kickstart/{{ item.instance }}/ks.cfg"
+      loop: "{{ modules }}"
+      vars:
+        hostname: "{{ item.hostname }}"
+          
     - name: Rebuild Kickstart config
       community.general.filesystem:
         fstype: ext2
-        dev: "{{ playbook_dir }}/terraform/modules/{{ item.module }}/{{ item.kickstart }}-oemdrv.img"
-        opts: -d {{ playbook_dir }}/terraform/kickstart/{{ item.kickstart }} -L OEMDRV
+        dev: "{{ playbook_dir }}/terraform/modules/{{ item.module }}/{{ item.instance }}-oemdrv.img"
+        opts: -d {{ playbook_dir }}/terraform/kickstart/{{ item.instance }} -L OEMDRV
         force: true
-      loop:
-        - module: 01_satellite_instance
-          kickstart: rhel7-satellite
-        - module: 02_client_instance
-          kickstart: rhel7
-        - module: 02_client_instance
-          kickstart: rhel8
-        
-        
+      loop: "{{ modules }}"
+
     - name: Provision all terraform resources
       community.general.terraform:
         project_path: "terraform/"

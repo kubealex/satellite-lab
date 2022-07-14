@@ -22,16 +22,16 @@ variable cpu {
   default     = 2
 }
 
-variable kickstart_image_rhel7 {
-  type        = string
-  description = "Path for the kickstart image for RHEL7"
-  default     = "rhel7-oemdrv.img"
-}
-
 variable kickstart_image_rhel8 {
   type        = string
-  description = "Path for the kickstart image for RHEL8"
+  description = "Path for the kickstart image for rhel8"
   default     = "rhel8-oemdrv.img"
+}
+
+variable kickstart_image_rhel9 {
+  type        = string
+  description = "Path for the kickstart image for rhel9"
+  default     = "rhel9-oemdrv.img"
 }
 
 variable libvirt_network {
@@ -52,14 +52,14 @@ variable disk_size {
   default     = 30
 }
 
-variable os_image_rhel7 {
-  type        = string
-  description = "URL/path of the image to be used for the VM provisioning"
-  default     = "rhel7.iso"
-}
-
 variable os_image_rhel8 {
   type        = string
   description = "URL/path of the image to be used for the VM provisioning"
   default     = "rhel8.iso"
+}
+
+variable os_image_rhel9 {
+  type        = string
+  description = "URL/path of the image to be used for the VM provisioning"
+  default     = "rhel9.iso"
 }

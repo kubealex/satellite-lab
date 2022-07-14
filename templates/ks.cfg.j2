@@ -1,7 +1,7 @@
 lang en_US
 keyboard us
 timezone Etc/GMT --isUtc
-rootpw $6$W4Iuu2a9kLxt88YQ$Rsu2gXdbUhLltmUQ/GRbw/mqtkmvsMq04PP5x4bUocjcDg2AeJquww0ZyBX1SPFKCHdaK6sk1kr6POPzlA7I51 --iscrypted
+rootpw --plaintext "redhat"
 user --name=sysadmin --groups=wheel --password=redhat --plaintext
 #platform x86_64
 reboot
@@ -10,18 +10,21 @@ bootloader --append="rhgb quiet crashkernel=auto"
 zerombr
 clearpart --all --initlabel
 autopart
-auth --passalgo=sha256 --useshadow
+#auth --passalgo=sha512 --useshadow
 selinux --enforcing
 firewall --enabled
 firstboot --disable
 network --activate
 %post --nochroot
-hostnamectl set-hostname el7-server.satellitedemo.labs
-hostnamectl --pretty set-hostname el7-server.satellitedemo.labs
+hostnamectl set-hostname {{ hostname }}.{{ domain }}
+hostnamectl --pretty set-hostname {{ hostname }}.{{ domain }}
 cp /etc/hostname /mnt/sysimage/etc/hostname
 cp /etc/machine-info /mnt/sysimage/etc/machine-info
 %end
+%post --log=/var/log/anaconda/post-install.log --erroronfail
+echo -e 'sysadmin\tALL=(ALL)\tNOPASSWD: ALL' >> /etc/sudoers
+%end
 %packages
 @^graphical-server-environment
-@base
+@standard
 %end
