@@ -93,9 +93,10 @@
         name: "{{ packages }}"
 
     - name: Ensure libvirtd is running
-      service: 
+      ansible.builtin.service: 
         name: libvirtd
-        state: enabled
+        state: started
+        enabled: true
 
     - name: Ensure libvirt can use root as user
       replace:
@@ -109,7 +110,7 @@
           line: 'group = "root"'
 
     - name: Restart libvirtd service
-      service: 
+      ansible.builtin.service: 
         name: libvirtd
         state: restarted
    
