@@ -79,9 +79,9 @@ resource "libvirt_domain" "el7-server" {
   }
 }
 
-resource "libvirt_domain" "el8-server" {
+resource "libvirt_domain" "el9-server" {
   autostart = true
-  name = "el8-server"
+  name = "el9-server"
   memory = var.memory*1024
   vcpu = var.cpu
 
