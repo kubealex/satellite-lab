@@ -64,31 +64,9 @@
   hosts: localhost
   vars:
     network_cidr: 192.168.211.0/24
-    packages:
-    - python3-lxml
-    - python3-netaddr
-    - python3-libvirt
-    - python3-pip
-    - libvirt-devel
-    - libvirt
-    - qemu-kvm
-    - virt-install
-    - virt-manager
-    domain: satellite.labs
-    modules:
-      - module: 01_satellite_instance
-        instance: rhel8-satellite
-        hostname: satellite
-        version: rhel8
-      - module: 02_client_instance
-        instance: rhel8
-        hostname: el8-server    
-        version: rhel8
-      - module: 02_client_instance
-        instance: rhel9
-        hostname: el9-server
-        version: rhel9
-
+    domain: satellitedemo.labs
+  vars_files:
+    - vars.yml
   become: true
   tasks:
     - name: Ensure required packages are in place
