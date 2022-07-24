@@ -6,7 +6,7 @@ It creates:
 - libvirt-network with DHCP/DNS
 - libvirt-pool for your VMS
 - Satellite server
-- RHEL7 and RHEL8 Client for demo purposes
+- RHEL8 and RHEL9 Client for demo purposes
 
 ## Host setup
 
@@ -40,7 +40,7 @@ The package comes with an inventory:
     [satellite]
     satellite.satellitedemo.labs ansible_user=sysadmin
 
-The playbook can either download RHEL 7.9 and RHEL 8.5 images, or work with pre-downloaded images. The only requirement is that the images need to be placed in the playbook directory with the name **rhel7.iso** and **rhel8.iso**
+The playbook can either download RHEL 8.6 and RHEL 9 images, or work with pre-downloaded images. The only requirement is that the images need to be placed in the playbook directory with the name **rhel8.iso** and **rhel9.iso**
 
 To download the images via the playbook, you will be prompted to enter your [Offline Token](https://access.redhat.com/management/api) to download resources.
 
