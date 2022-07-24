@@ -1,4 +1,4 @@
-# Satellite Demo env installer
+# Satellite 6.11 Demo environment provisioner
 
 This is a simple demo environment provisioner for Satellite to install based on Ansible and Terraform.
 It creates:
