@@ -21,4 +21,3 @@ modules:
     instance: rhel9
     hostname: el9-server
     version: rhel9
-domain: idmdemo.labs
