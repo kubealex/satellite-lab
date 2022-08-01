@@ -195,14 +195,6 @@
         timeout: 1800
         delay: 0
 
-    - name: Setup sysadmin user to use sudo
-      ansible.builtin.copy:
-        content: '%wheel	ALL=(ALL)	NOPASSWD: ALL'
-        dest: /etc/sudoers.d/wheelers
-        mode: 0400
-        owner: root
-        group: root
-
     - ansible.builtin.ping:
 
     - name: Setup is ready
