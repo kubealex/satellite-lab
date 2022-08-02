@@ -1,7 +1,8 @@
 lang en_US
 keyboard us
 timezone Etc/GMT --isUtc
-rootpw --plaintext redhat
+#rootpw --plaintext redhat
+rootpw $2b$10$XlvSTqb8C6lueYd/pkaOj.O0KuaCXdXMzwYotbTbm1Pp3S8sP/j3W --iscrypted
 user --name=sysadmin --groups=wheel --password=redhat --plaintext
 #platform x86_64
 cmdline
@@ -12,6 +13,7 @@ zerombr
 clearpart --all --initlabel
 autopart
 #auth --passalgo=sha512 --useshadow
+auth --passalgo=sha512 --useshadow
 selinux --enforcing
 firewall --enabled
 firstboot --disable
