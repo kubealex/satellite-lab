@@ -26,7 +26,7 @@ You need to follow the instructions in [Ansible Website](https://docs.ansible.co
 
 ## Needed variables
 
-In order to work, the playbooks need some basic variables:
+In order to work, the playbooks need some basic variables in the **lab_vars.yml** file:
 
 | Variable | Value | Description | 
 |--|--|--|
@@ -38,7 +38,7 @@ In order to work, the playbooks need some basic variables:
 
 ## Lab provisioning
 
-The provisioner consists of two playbooks, that configure the underlying components (VM, network) and prepares the guests to install Satellite.
+The provisioner consists of two playbooks, that configure the underlying components (VM, network) and prepare the guests to install Satellite.
 
 The first playbook is **provision-lab.yml** which takes care of creating KVM resources. 
 
@@ -46,7 +46,7 @@ The package comes with an inventory:
 
     localhost ansible_connection=local
     [satellite]
-    satellite.satellitedemo.labs ansible_user=sysadmin
+    satellite.satellitedemo.labs ansible_user=root ansible_ssh_pass=redhat ansible_ssh_common_args='-o StrictHostKeyChecking=no'
 
 The playbook can either download RHEL 8.6 and RHEL 9 images, or work with pre-downloaded images. The only requirement is that the images need to be placed in the playbook directory with the name **rhel8.iso** and **rhel9.iso**
 
@@ -69,12 +69,6 @@ It takes around 20-25 minutes to be up and running. If you experience last step 
 With your lab up and running, you can proceed installing Satellite using the provided **satellite-setup.yml** playbook.
 
     ansible-playbook -i inventory satellite-setup.yml
-
-It will ask for:
-
-- RHNID (Username)
-- Password
-- PoolID of the subscription
 
 It will install Satellite with:  
 
