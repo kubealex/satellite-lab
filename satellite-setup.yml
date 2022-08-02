@@ -2,22 +2,8 @@
 - name: Satellite server configuration playbook
   hosts: satellite
   become: true
-  vars_prompt:
-    - name: rhsm_user
-      prompt: What is your RHSM Username (RHNID)?
-      unsafe: yes
-      private: no
-
-    - name: rhsm_password
-      prompt: What is your RHSM Password?
-      unsafe: yes
-      private: yes
-
-    - name: rhsm_pool_id
-      prompt: What is the pool-id for your subscription (check README)?
-      unsafe: yes
-      private: no
-
+  vars_files:
+    - lab_vars.yml
   tasks:
     - name: Register system with Red Hat Subscription Manager
       community.general.redhat_subscription:
@@ -41,7 +27,7 @@
         state: enabled
 
     - name: Ensure all packages are updated
-      yum:
+      ansible.builtin.yum:
         name: '*'
         state: latest
 
@@ -49,7 +35,7 @@
       ansible.builtin.command: "dnf -y module enable satellite:el8"
             
     - name: Install satellite packages
-      yum:
+      ansible.builtin.yum:
         name: 
           - satellite
           - chrony
@@ -57,13 +43,13 @@
         state: latest
 
     - name: Ensure chrony is enabled
-      service:
+      ansible.builtin.service:
         name: chronyd
         enabled: true
         state: started
 
     - name: Ensure firewalld is enabled
-      service:
+      ansible.builtin.service:
         name: firewalld
         enabled: true
         state: started
@@ -87,13 +73,13 @@
         - 69/udp
 
     - name: Reload firewalld service
-      service:
+      ansible.builtin.service:
         name: firewalld
         state: restarted
 
 
     - name: Install satellite
-      shell: | 
+      ansible.builtin.shell: | 
         satellite-installer --scenario satellite \
         --foreman-initial-organization "Red Hat" \
         --foreman-initial-location "Raleigh" \
@@ -103,4 +89,4 @@
         --foreman-proxy-plugin-remote-execution-ssh-install-key true
 
     - name: Reboot server
-      reboot: 
+      ansible.builtin.reboot: 

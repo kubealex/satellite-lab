@@ -24,15 +24,23 @@ First you need to download and install Terraform:
 
 You need to follow the instructions in [Ansible Website](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-the-ansible-community-package) to proceed and install Ansible on your machine.
 
+## Needed variables
+
+In order to work, the playbooks need some basic variables:
+
+| Variable | Value | Description | 
+|--|--|--|
+| **network_cidr** | Defaults to 192.168.211.0/24 | The subnet that is assigned to libvirt network |
+| **offline_token** | No default | [Offline Token](https://access.redhat.com/management/api) for images/packages download from Red Hat Portal |
+| **rhsm_user** | No default | The Red Hat Account username |
+| **rhsm_password** | No default | The Red Hat Account username |
+| **rhsm_pool_id** | No default | The pool ID of the subscription covering the product [in subscription manager](https://access.redhat.com/management/subscriptions/) |
+
 ## Lab provisioning
 
 The provisioner consists of two playbooks, that configure the underlying components (VM, network) and prepares the guests to install Satellite.
 
-The first playbook is **provision-lab.yml** which takes care of creating KVM resources. It only has a single variable: 
-
-| Variable | Value |
-|--|--|
-| **network_cidr** | Defaults to 192.168.211.0/24 |
+The first playbook is **provision-lab.yml** which takes care of creating KVM resources. 
 
 The package comes with an inventory:
 
@@ -42,7 +50,7 @@ The package comes with an inventory:
 
 The playbook can either download RHEL 8.6 and RHEL 9 images, or work with pre-downloaded images. The only requirement is that the images need to be placed in the playbook directory with the name **rhel8.iso** and **rhel9.iso**
 
-To download the images via the playbook, you will be prompted to enter your [Offline Token](https://access.redhat.com/management/api) to download resources.
+To download the images via the playbook, you will need your [Offline Token](https://access.redhat.com/management/api).
 
 **IMPORTANT** If you don't want to download images (it's around 20GB), just leave the variable blank.
 

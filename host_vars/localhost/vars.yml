@@ -21,3 +21,7 @@ modules:
     instance: rhel9
     hostname: el9-server
     version: rhel9
+domain: satellitedemo.labs
+checksum:
+  rhel9: a387f3230acf87ee38707ee90d3c88f44d7bf579e6325492f562f0f1f9449e89
+  rhel8: c324f3b07283f9393168f0a4ad2167ebbf7e4699d65c9670e0d9e58ba4e2a9a8

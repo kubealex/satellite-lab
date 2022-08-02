@@ -1,76 +1,29 @@
 - name: Download RHEL ISOs
   hosts: localhost
-  vars_prompt:
-    - name: offline_token
-      prompt: What is your Offline Token? Leave this empty if you don't want to download ISOS (Check README)
-      unsafe: yes
-      private: yes      
-  vars:
-    checksum:
-      rhel9: a387f3230acf87ee38707ee90d3c88f44d7bf579e6325492f562f0f1f9449e89
-      rhel8: c324f3b07283f9393168f0a4ad2167ebbf7e4699d65c9670e0d9e58ba4e2a9a8
-
+  vars_files:
+    - lab_vars.yml
   tasks:
-    - block:
-
-      - name: Retrieve an access token
-        uri:
-          url: https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token
-          body:
-            grant_type: refresh_token
-            client_id: rhsm-api
-            refresh_token: "{{ offline_token }}"
-          body_format: form-urlencoded
-          method: POST
-        register: response
-
-      - name: Workaround to non-working uri module on success
-        shell: 'curl -H "Authorization: Bearer {{ response.json.access_token }}" https://api.access.redhat.com/management/v1/images/{{ item }}/download'
-        loop:
-          - "{{ checksum.rhel8 }}"
-          - "{{ checksum.rhel9 }}"
-        register: imageurl
-
-  # HANGING FOREVER
-  #    - name: Retrieve image download URL
-  #      ansible.builtin.uri:
-  #        url: https://api.access.redhat.com/management/v1/images/{{ checksum.rhel8 }}/download
-  #        return_content: true
-  #        follow_redirects: all
-  #        headers:
-  #          Content-Type: application/json
-  #          Authorization: 'Bearer {{ response.json.access_token }}'
-  #          User-Agent: curl/7.61.1
-  #      register: imageurl
-      - name: Set result as facts
-        ansible.builtin.set_fact:
-          rhel8_url: "{{ (imageurl.results[0].stdout | from_json).body.href }}"
-          rhel8_filename: "{{(imageurl.results[0].stdout | from_json).body.filename }}"
-          rhel9_url: "{{ (imageurl.results[1].stdout | from_json).body.href }}"
-          rhel9_filename: "{{ (imageurl.results[1].stdout | from_json).body.filename }}"
-
-      - name: Retrieve RHEL ISO
-        get_url:
-          url: "{{ item.url }}"
-          dest: "{{ playbook_dir }}/{{ item.os }}.iso"
-        loop:
-          - url: "{{ rhel8_url }}"
-            os: "rhel8"
-          - url: "{{ rhel9_url }}"
-            os: "rhel9"
+    - ansible.builtin.include_role:
+        name: package-downloader
+      vars:
+        rh_product_filename: rhel.iso
+        rh_product_checksum: "{{ checksum.rhel9 }}"
+        rh_api_offline_token: "{{ offline_token }}"
+      loop:
+        - filename: rhel8.iso
+          checksum: "{{ checksum.rhel8 }}"
+        - filename: rhel9.iso
+          checksum: "{{ checksum.rhel9 }}"
       when: offline_token is defined and offline_token != ""
-      
+
 - name: This play provisions VMs for Satellite demos
   hosts: localhost
-  vars:
-    network_cidr: 192.168.211.0/24
-    domain: satellitedemo.labs
-  vars_files:
-    - vars.yml
   become: true
+  vars_files:
+    - lab_vars.yml  
   tasks:
     - name: Ensure required packages are in place
-      yum: 
+      ansible.builtin.yum: 
         name: "{{ packages }}"
 
     - name: Ensure libvirtd is running
@@ -80,7 +33,7 @@
         enabled: true
 
     - name: Ensure libvirt can use root as user
-      replace:
+      ansible.builtin.replace:
         path: /etc/libvirt/qemu.conf
         regexp: "{{ item.regexp }}"
         replace: "{{ item.line }}"
@@ -172,28 +125,30 @@
         ansible_ssh_pass: redhat
         ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
         groups:
-          - "servers"        
+          - "servers"
       loop:
-        - satellite
         - el8-server
         - el9-server
 
     - name: Ensure to clean known_hosts
       ansible.builtin.known_hosts:
-        host: "{{ item }}"
+        host: "{{ item }}.{{ domain }}"
         path: ~/.ssh/known_hosts
         state: absent
-      loop: "{{ groups['servers'] }}"
+      loop: 
+        - satellite
+        - el8-server
+        - el9-server      
       become: false
 
 - name: Check connection to servers
-  hosts: servers
+  hosts: servers,satellite
   gather_facts: no
   tasks:
     - name: Waiting for installation to end, it can take time!
       ansible.builtin.wait_for_connection:
         timeout: 1800
-        delay: 0
+        sleep: 120
 
     - ansible.builtin.ping:
 
