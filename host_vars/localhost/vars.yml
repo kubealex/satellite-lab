@@ -23,5 +23,5 @@ modules:
     version: rhel9
 domain: satellitedemo.labs
 checksum:
-  rhel9: a387f3230acf87ee38707ee90d3c88f44d7bf579e6325492f562f0f1f9449e89
+  rhel9: c6942e3ed65947ed48c30589d9c1a752e96c5b94ee8de1923331449fee162cc1
   rhel8: 8cb0dfacc94b789933253d5583a2fb7afce26d38d75be7c204975fe20b7bdf71
