@@ -125,15 +125,13 @@
 
     - name: Add servers to inventory
       ansible.builtin.add_host:
-        hostname: "{{ item }}.{{ domain }}"
-        ansible_user: root
+        hostname: "{{ item.hostname }}.{{ domain }}"
+        ansible_user: sysadmin
         ansible_ssh_pass: redhat
         ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
         groups:
           - "servers"
-      loop:
-        - el8-server
-        - el9-server
+      loop: "{{ modules }}"
 
     - name: Ensure to clean known_hosts
       ansible.builtin.known_hosts:
