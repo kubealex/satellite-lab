@@ -16,10 +16,10 @@
       community.general.rhsm_repository:
         name: '*'
         state: disabled
-        
+
     - name: Enable required RHSM repositories
       community.general.rhsm_repository:
-        name: 
+        name:
           - rhel-8-for-x86_64-baseos-rpms
           - rhel-8-for-x86_64-appstream-rpms
           - satellite-6.11-for-rhel-8-x86_64-rpms
@@ -29,18 +29,18 @@
     - name: Ensure all packages are updated
       ansible.builtin.yum:
         name: '*'
-        state: latest
+        state: latest # noqa package-latest
 
     - name: Enable satellite module
       ansible.builtin.command: "dnf -y module enable satellite:el8"
-            
+
     - name: Install satellite packages
       ansible.builtin.yum:
-        name: 
+        name:
           - satellite
           - chrony
           - sos
-        state: latest
+        state: latest # noqa package-latest
 
     - name: Ensure chrony is enabled
       ansible.builtin.service:
@@ -58,14 +58,14 @@
       ansible.posix.firewalld:
         zone: public
         state: enabled
-        permanent: yes
+        permanent: true
         port: "{{ item }}"
-      loop: 
+      loop:
         - 80/tcp
         - 443/tcp
         - 5647/tcp
         - 8000/tcp
-        - 8140/tcp 
+        - 8140/tcp
         - 9090/tcp
         - 53/udp
         - 53/tcp
@@ -79,7 +79,7 @@
 
 
     - name: Install satellite
-      ansible.builtin.shell: | 
+      ansible.builtin.shell: |
         satellite-installer --scenario satellite \
         --foreman-initial-organization "Red Hat" \
         --foreman-initial-location "Raleigh" \
@@ -89,4 +89,4 @@
         --foreman-proxy-plugin-remote-execution-ssh-install-key true
 
     - name: Reboot server
-      ansible.builtin.reboot: 
+      ansible.builtin.reboot:
