@@ -28,7 +28,7 @@ You need to follow the instructions in [Ansible Website](https://docs.ansible.co
 
 In order to work, the playbooks need some basic variables in the **lab_vars.yml** file:
 
-| Variable | Value | Description | 
+| Variable | Value | Description |
 |--|--|--|
 | **network_cidr** | Defaults to 192.168.211.0/24 | The subnet that is assigned to libvirt network |
 | **offline_token** | No default | [Offline Token](https://access.redhat.com/management/api) for images/packages download from Red Hat Portal |
@@ -40,7 +40,7 @@ In order to work, the playbooks need some basic variables in the **lab_vars.yml*
 
 The provisioner consists of two playbooks, that configure the underlying components (VM, network) and prepare the guests to install Satellite.
 
-The first playbook is **provision-lab.yml** which takes care of creating KVM resources. 
+The first playbook is **provision-lab.yml** which takes care of creating KVM resources.
 
 The package comes with an inventory:
 
@@ -48,7 +48,7 @@ The package comes with an inventory:
     [satellite]
     satellite.satellitedemo.labs ansible_user=root ansible_ssh_pass=redhat ansible_ssh_common_args='-o StrictHostKeyChecking=no'
 
-The playbook can either download RHEL 8.6 and RHEL 9 images, or work with pre-downloaded images. The only requirement is that the images need to be placed in the playbook directory with the name **rhel8.iso** and **rhel9.iso**
+The playbook can downloadRHEL 9 images, or work with pre-downloaded images. The only requirement is that the images need to be placed in the playbook directory with the name **rhel9.iso**
 
 To download the images via the playbook, you will need your [Offline Token](https://access.redhat.com/management/api).
 
@@ -70,7 +70,7 @@ With your lab up and running, you can proceed installing Satellite using the pro
 
     ansible-playbook -i inventory satellite-setup.yml
 
-It will install Satellite with:  
+It will install Satellite with:
 
 | Variable | Value |
 |--|--|
