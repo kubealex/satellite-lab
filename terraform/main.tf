@@ -25,7 +25,7 @@ module "libvirt_resources" {
   libvirt_pool = var.libvirt_pool
 }
 
-module "satellite_instance" { 
+module "satellite_instance" {
   source = "./modules/01_satellite_instance"
   depends_on = [module.libvirt_resources]
 
@@ -36,10 +36,11 @@ module "satellite_instance" {
   disk_size = var.disk_size
 }
 
-module "client_instances" { 
+module "client_instances" {
   source = "./modules/02_client_instance"
   depends_on = [module.libvirt_resources]
-  
+  count = tobool(lower(var.client_setup)) ? 1 : 0
+
 # Variables
   domain = var.domain
   libvirt_network = var.libvirt_network

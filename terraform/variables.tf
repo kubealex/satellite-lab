@@ -33,3 +33,9 @@ variable libvirt_pool_path {
   description = "Path for libvirt pool definition"
   default     = "/var/lib/libvirt/images"
 }
+
+variable client_setup {
+  type        = string
+  description = "Flag to enable RHEL instance deployment"
+  default     = false
+}
