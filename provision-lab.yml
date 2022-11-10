@@ -3,19 +3,21 @@
   vars_files:
     - lab_vars.yml
   tasks:
-    - name: Include package downloader role
+    - name: Include downloader role
       ansible.builtin.include_role:
         name: package-downloader
       vars:
         rh_product_filename: "{{ item.filename }}"
-        rh_product_checksum: "{{ item.checksum }}"
+        rh_product_name: "{{ item.product }}"
         rh_api_offline_token: "{{ offline_token }}"
       loop:
         - filename: rhel8.iso
-          checksum: "{{ checksum.rhel8 }}"
+          product: "rhel8"
         - filename: rhel9.iso
-          checksum: "{{ checksum.rhel9 }}"
-      when: offline_token is defined and offline_token != ""
+          product: "rhel9"
+      when:
+        - offline_token is defined
+        - offline_token != ""
 
 - name: This play provisions VMs for Satellite demos
   hosts: localhost
